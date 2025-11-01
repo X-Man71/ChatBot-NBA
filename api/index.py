@@ -1,6 +1,6 @@
 from turtle import title
 from flask import Flask, request, render_template, redirect, jsonify, send_from_directory, url_for, abort, session
-from utils import load_posts, save_posts
+from service.utils import load_posts, save_posts
 from nba_api.stats.endpoints import leaguedashplayerstats
 from nba_api.stats.endpoints import leaguegamefinder
 from service.kakaologin import get_user_info_from_kakao, kakao_login
