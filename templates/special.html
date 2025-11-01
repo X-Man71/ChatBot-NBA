@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>NBA 게임(2K)</title>
+    <style>
+        /* 전체 페이지 스타일 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* 제목 */
+        h1 {
+            margin-top: 30px;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+
+        /* 메인 배너 이미지 */
+        .main-banner {
+            margin: 40px auto;
+            max-width: 600px;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        .main-banner img {
+            width: 100%;
+            border-radius: 12px;
+            transition: transform 0.6s ease;
+        }
+
+        .main-banner img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 돌아가기 버튼 */
+        #back-btn {
+            background-color: #ff3b3f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #back-btn:hover {
+            background-color: #e03e3e;
+            transform: scale(1.05);
+        }
+
+        /* 소개 섹션 */
+        .info-section {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 10px;
+        }
+
+        .info-section h2 {
+            color: #ffd700;
+        }
+
+        .info-section ul {
+            list-style-type: '🏀 ';
+            padding-left: 20px;
+        }
+
+        /* 푸터 */
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏀 NBA 2K 시리즈 소개 🏀</h1>
+
+    <main>
+        <div class="main-banner">
+            <img src="{{ url_for('static', filename='2k_sports.png') }}" alt="NBA 게임">
+        </div>
+
+        <section class="info-section">
+            <h2>게임 특징</h2>
+            <ul>
+                <li>현실감 넘치는 그래픽과 선수 모션</li>
+                <li>MyCareer 모드로 자신만의 선수 성장</li>
+                <li>온라인 멀티플레이로 전 세계 유저와 경쟁</li>
+                <li>팀 관리, 드래프트 등 다양한 콘텐츠 제공</li>
+            </ul>
+        </section>
+
+        <section class="info-section">
+            <h2>최신작 정보</h2>
+            <p>NBA 2K26(apple arcade 버젼)은 최신 엔진으로 더욱 사실적인 경기 환경을 제공합니다. 
+            AI 향상, 선수 표정, 코트 질감까지 모두 업그레이드되어 최고의 농구 경험을 제공합니다.</p>
+        </section>
+        <button><a href="https://nba.2k.com/ko-KR/mobile/">게임 하러가기</a></button>
+    </main>
+</body>
+</html>
+<button id="back-btn" onclick="window.location.href='/'">메인 페이지로 돌아가기</button>

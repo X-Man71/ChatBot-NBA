@@ -13,167 +13,118 @@
     }
 
     header {
-      background-color: #db8a10; /* NBA 블루 */
+      background-color: #db8a10;
       color: white;
-      padding: 20px;
       text-align: center;
+      padding: 20px 0;
     }
 
-    header img {
-      height: 60px;
-      vertical-align: middle;
-    }
-
-    .container {
-      display: flex;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* 왼쪽 메뉴 */
+    /* 상단 메뉴바 */
     nav {
-      width: 200px;
-      background-color: #fff;
-      padding: 15px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 10px;
-      margin-right: 20px;
-      height: fit-content;
-    }
-
-    nav h3 {
-      color: #e03a3e; /* NBA 레드 */
-      margin-bottom: 10px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 10px 0;
+      flex-wrap: wrap;
     }
 
     nav ul {
       list-style: none;
+      margin: 0;
       padding: 0;
-    }
-
-    nav li {
-      margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
     }
 
     nav a {
       text-decoration: none;
       color: #2c3e50;
-    }
-
-    /* 메인 콘텐츠 */
-    main {
-      flex: 1;
-    }
-
-    .notice-box {
-      background-color: #fff3cd;
-      border: 1px solid #ffeeba;
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 8px;
       font-weight: bold;
-      color: #856404;
-      text-align: center;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #e03a3e;
+    }
+
+    .news-button {
+      background-color: #e03a3e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
     }
 
     .main-banner img {
       display: block;
       margin: 0 auto;
-      width: 200px;
-    }
-
-    .horizontal-layout {
-      display: flex;
-      gap: 30px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-    }
-
-    .text-and-images,
-    .table-wrapper {
-      flex: 1;
-      min-width: 300px;
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    img {
-      display: block;
-      margin: 15px auto;
-      width: 200px;
-      height: auto;
-      border-radius: 10px;
-    }
-
-    strong {
-      text-align: center;
-      display: block;
-      margin-bottom: 15px;
-      font-size: 1.1em;
-      color: #e03a3e;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-
-    th {
-      background-color: #db8a10;
-      color: white;
-    }
-
-    td, th {
-      padding: 10px;
-      text-align: center;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+      width: 250px;
     }
 
     .section-title {
       border-bottom: 2px solid #ccc;
       padding-bottom: 5px;
-      margin-top: 40px;
+      margin-top: 50px;
       font-size: 1.5em;
       color: #db8a10;
-    }
-
-    .matchup-section {
       text-align: center;
-      margin-top: 40px;
     }
 
-    .matchup-player {
-      margin-bottom: 20px;
+    /* 선수/팀 카드 */
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
     }
 
-    .divider {
-      font-size: 2em;
-      color: #db8a10;
-      margin: 20px 0;
+    .card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      width: 250px;
+      text-align: center;
+      transition: 0.3s;
     }
 
-    /* 오른쪽 배너 영역 */
-    aside {
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
       width: 200px;
-      margin-left: 20px;
+      border-radius: 8px;
     }
 
-    aside img {
-      width: 100%;
+    .card h3 {
+      color: #e03a3e;
+    }
+
+    /* 뉴스 영역 */
+    #news-section div {
+      background: #fff;
       border-radius: 8px;
-      margin-bottom: 20px;
+      padding: 15px;
+      margin-bottom: 15px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    #news-section h3 {
+      margin: 0 0 10px 0;
+      color: #e03a3e;
     }
 
     footer {
@@ -181,121 +132,122 @@
       padding: 20px;
       background-color: #db8a10;
       color: white;
-      margin-top: 40px;
+      margin-top: 60px;
     }
-
   </style>
 </head>
 <body>
-
 <header>
-  <h1>🏀NBA 프로농구 팬사이트🏀</h1>
+  <h1>🏀 NBA 프로농구 팬사이트 🏀</h1>
 </header>
 
-<div class="container">
-  <!-- 왼쪽 메뉴 -->
-  <nav>
-    <h3>메뉴</h3>
+<nav class="top-nav">
+  <div class="nav-container">
     <ul>
       <li><a href="/">홈</a></li>
       <li><a href="/player_list">선수 명단</a></li>
+      <li><a href="/game">경기 기록</a></li>
+      <li><a href="/community">커뮤니티</a></li>
       <li><a href="https://www.nba.com/" target="_blank">NBA 공식 사이트</a></li>
-      <li><a href="/community">커뮤니티 게시판</a></li>
-      <li><a href="/login">카카오 로그인</a></li>
-      <h2 class="section-title">NBA 뉴스</h2>
-      <button id="news-btn" style="padding:10px 20px; background-color:#e03a3e; color:white; border:none; border-radius:5px; cursor:pointer;">
-  📰오늘의 뉴스 보기
-      </button>
-      <div id="news-section" style="margin-top:20px;"></div>
-
+      <li><a href="/ran">퀴즈</a></li>
+      <li><a href="/special">공식 게임</a></li>
+      {% if not token %}
+        <li><a href="/login">카카오 로그인</a></li>
+      {% else %}
+        <li><a href="/logout">로그아웃</a></li>
+      {% endif %}
+      <li><button id="news-btn" class="news-button">📰 오늘의 뉴스 보기</button></li>
     </ul>
-  </nav>
+  </div>
+</nav>
+
+<style>
+  /* 메뉴바 스타일 */
+  .top-nav {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .top-nav .nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .top-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    height: 60px;
+    gap: 20px;
+  }
+  .top-nav ul li {
+    display: inline-block;
+  }
+  .top-nav ul li a {
+    text-decoration: none;
+    color: #2c3e50;
+    font-weight: 500;
+    padding: 10px;
+    transition: color 0.3s;
+  }
+  .top-nav ul li a:hover {
+    color: #e03a3e;
+  }
+  .news-button {
+    background-color: #e03a3e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  .news-button:hover {
+    background-color: #c12a2a;
+  }
+</style>
 
   <!-- 메인 콘텐츠 -->
   <main>
     <div class="main-banner">
-      <img src="{{ url_for('static', filename='images.png') }}" alt="NBA 로고">
+      <img src="{{ url_for('static', filename='nba.jpg') }}" alt="NBA 로고">
     </div>
 
-    <div class="notice-box">
-      -공지사항-<br>
-    10월 2일 부터 NBA 프리시즌 개막. 그 날까진 경기기록 업데이트 없을 예정
+    <!-- 인기 선수 섹션 -->
+  <h2 class="section-title">🔥 인기 선수</h2>
+  <div class="card-container">
+    <div class="card">
+      <img src="{{ url_for('static', filename='yay.jpg') }}" alt="LeBron James">
+      <br>
+      <a href="https://www.nba.com/player/2544">르브론 제임스</a>
+      <p>팀: LA 레이커스<br>포지션: SF</p>
     </div>
-
-    <div class="horizontal-layout">
-      <div class="text-and-images">
-        <strong>플레이오프의 오클라호마 썬더스와 인디애나 페이서스</strong>
-        <img src="https://img1.newsis.com/2025/06/20/NISI20250620_0000432971_web.jpg" alt="결승전 이미지">
-        <img src="{{ url_for('static', filename='dragon.webp') }}" alt="플레이오프 이미지">
-      </div>
-      <div class="table-wrapper">
-        <h2 class="section-title">경기 결과 요약</h2>
-        <table>
-          <tr>
-            <th>일자</th>
-            <th>승리</th>
-            <th>팀 이름</th>
-            <th>MVP</th>
-          </tr>
-          <tr>
-            <td>6/5</td>
-            <td>승</td>
-            <td>페이서스</td>
-            <td>파스칼 시아캄</td>
-          </tr>
-          <tr>
-            <td>6/8</td>
-            <td>승</td>
-            <td>썬더스</td>
-            <td>샤이 길저스 알렉산더</td>
-          </tr>
-          <tr>
-            <td>6/11</td>
-            <td>승</td>
-            <td>페이서스</td>
-            <td>타이리스 할리버튼</td>
-          </tr>
-          <tr>
-            <td>6/13</td>
-            <td>승</td>
-            <td>썬더스</td>
-            <td>샤이 길저스 알렉산더</td>
-          </tr>
-          <tr>
-            <td>6/16</td>
-            <td>승</td>
-            <td>썬더스</td>
-            <td>제일런 윌리엄스</td>
-          </tr>
-          <tr>
-            <td>6/19</td>
-            <td>승</td>
-            <td>페이서스</td>
-            <td>파스칼 시아캄</td>
-          </tr>
-        </table>
-      </div>
+    <div class="card">
+      <img src="{{ url_for('static', filename='player.webp') }}" alt="Shai Gilgeous-Alexander">
+      <br>
+      <a href="https://www.nba.com/stats/player/1628983">샤이 길져스 알렉산더</a>
+      <p>팀: 오클라호마 시티 썬더스<br>포지션: PG</p>
     </div>
-
-    <h2 class="section-title">NEWS: 피닉스 선즈의 희망, 케빈 듀란트가 휴스턴으로 트레이드?!</h2>
-
-    <div class="matchup-section">
-      <div class="matchup-player">
-        <h2>피닉스 선즈의 에이스 - 케빈 듀란트</h2>
-        <img src="{{ url_for('static', filename='durant.jpg') }}" alt="샤이 길저스 알렉산더">
-      </div>
-
-      <div class="matchup-player">
-        <h2>이제 피닉스의 남은 희망은 '데빈 부커'와 트레이드 된 두명 뿐인가?</h2>
-      </div>
+    <div class="card">
+      <img src="{{ url_for('static', filename='durant.jpg') }}" alt="Kevin Durant">
+      <br>
+      <a href="https://www.nba.com/player/201142">케빈 듀란트</a>
+      <p>팀: 피닉스 선즈<br>포지션: SF</p>
     </div>
+  </div>
+
   </main>
 
-  <!-- 오른쪽 배너 영역 -->
-  <aside>
-    <a href="/login"><img src="{{ url_for('static', filename='kakao1.png') }}" alt="카카오 로그인"></a>
-    <img src="{{ url_for('static', filename='다운로드.png') }}" alt="구독하기">
-  </aside>
+ <!-- 뉴스 영역 -->
+  <h2 class="section-title">📰 오늘의 NBA 뉴스</h2>
+  <div id="news-section"></div>
+
 </div>
 
 <footer>
@@ -313,10 +265,8 @@ document.getElementById('news-btn').addEventListener('click', () => {
       if (data.length > 0) {
         data.forEach(news => {
           const d = document.createElement('div');
-          d.style.borderBottom = '1px solid #ccc';
-          d.style.padding = '10px 0';
           d.innerHTML = `
-            <h3>📰 ${news.title}</h3>
+            <h3>${news.title}</h3>
             <p>${news.summary}</p>
             <a href="${news.url}" target="_blank">자세히 보기</a>
           `;
@@ -332,7 +282,6 @@ document.getElementById('news-btn').addEventListener('click', () => {
     });
 });
 </script>
-
 
 </body>
 </html>

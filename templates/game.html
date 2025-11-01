@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>NBA 시즌별 경기 기록</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f4f8;
+            color: #2c3e50;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #1d2d50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 90%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1d2d50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #back-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 12px 25px;
+            background-color: #e03a3e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #1d2d50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #e03a3e;
+        }
+
+        .pagination .disabled {
+            color: #ddd;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>NBA 시즌별 경기 기록</h1>
+    <button id="back-btn" onclick="window.location.href='/'">메인 페이지로 돌아가기</button>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>경기 날짜</th>
+                <th>경기 팀</th>
+                <th>홈 팀(약어)</th>
+                <th>승패 현황</th>
+                <th>출전 시간</th>
+                <th>총 득점</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr>
+                <td>{{ game['GAME_DATE'] }}</td>
+                <td>{{ game['MATCHUP'] }}</td>
+                <td>{{ game['TEAM_ABBREVIATION'] }}</td>
+                <td>{{ game['WL'] }}</td>
+                <td>{{ game['MIN'] }}</td>
+                <td>{{ game['PTS'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 버튼 -->
+    <div class="pagination">
+        <a href="/game?page=1" class="{% if page == 1 %}disabled{% endif %}">처음</a>
+        <a href="/game?page={{ page - 1 }}" class="{% if page == 1 %}disabled{% endif %}">이전</a>
+        <a href="/game?page={{ page + 1 }}" class="{% if page == total_pages %}disabled{% endif %}">다음</a>
+        <a href="/game?page={{ total_pages }}" class="{% if page == total_pages %}disabled{% endif %}">마지막</a>
+    </div>
+</body>
+</html>
+

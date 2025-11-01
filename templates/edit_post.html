@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>글 수정</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f4f8;
+      color: #2c3e50;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #db8a10;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    .btn-group {
+      margin-top: 25px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 25px;
+      background-color: #db8a10;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    button.danger {
+      background-color: #e74c3c;
+      margin-left: 15px;
+    }
+    a.back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="{{ url_for('community') }}" class="back-link">← 게시판으로 돌아가기</a>
+
+  <h2>✏️ 글 수정하기</h2>
+
+  <form method="post">
+    <label for="title">제목:</label>
+    <input type="text" id="title" name="title" value="{{ post.title }}" required>
+
+    <label for="content">내용:</label>
+    <textarea id="content" name="content" rows="6" required>{{ post.content }}</textarea>
+
+    <div class="btn-group">
+      <button type="submit">수정 저장</button>
+      <button type="submit" formaction="{{ url_for('delete_post', post_id=post_id) }}" formmethod="post" class="danger" onclick="return confirm('정말 삭제할까요?');">게시글 삭제</button>
+    </div>
+  </form>
+
+</body>
+</html>
+
+

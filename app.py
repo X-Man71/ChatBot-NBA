@@ -1,9 +1,12 @@
 from turtle import title
-from flask import Flask, request, render_template, redirect, jsonify, send_from_directory, url_for
+from flask import Flask, request, render_template, redirect, jsonify, send_from_directory, url_for, abort, session
+from utils import load_posts, save_posts
 from nba_api.stats.endpoints import leaguedashplayerstats
+from nba_api.stats.endpoints import leaguegamefinder
+from service.kakaologin import get_user_info_from_kakao, kakao_login
 from nba_api.stats.static import players
 import pandas as pd
-import requests
+import requests, random
 import json
 import service.player_rank as player_rank
 import service.search as search
@@ -15,70 +18,47 @@ import feedparser
 import time
 import threading
 app = Flask(__name__)
+app.secret_key = "whatthehell" #SESSION을 사용하려면 KEY를 작성해줘야한다.
 
 
-@app.route("/")
-def home():
-    return render_template("name.html")
+"""
+게임 데이터
+"""
 
 
-all_players =  players.get_all_players()
+games_data = [{'SEASON_ID': '22024', 'TEAM_ID': 1610612741, 'TEAM_ABBREVIATION': 'CHI', 'TEAM_NAME': 'Chicago Bulls', 'GAME_ID': '0022401191', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'CHI vs. PHI', 'WL': 'W', 'MIN': 240, 'PTS': 122, 'FGM': 47, 'FGA': 103, 'FG_PCT': 0.456, 'FG3M': 13, 'FG3A': 40, 'FG3_PCT': 0.325, 'FTM': 15, 'FTA': 20, 'FT_PCT': 0.75, 'OREB': 15, 'DREB': 44, 'REB': 59, 'AST': 29, 'STL': 10, 'BLK': 4, 'TOV': 12, 'PF': 17, 'PLUS_MINUS': 20.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612753, 'TEAM_ABBREVIATION': 'ORL', 'TEAM_NAME': 'Orlando Magic', 'GAME_ID': '0022401186', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'ORL vs. ATL', 'WL': 'L', 'MIN': 240, 'PTS': 105, 'FGM': 40, 'FGA': 88, 'FG_PCT': 0.455, 'FG3M': 15, 'FG3A': 35, 'FG3_PCT': 0.429, 'FTM': 10, 'FTA': 15, 'FT_PCT': 0.667, 'OREB': 12, 'DREB': 31, 'REB': 43, 'AST': 25, 'STL': 11, 'BLK': 5, 'TOV': 14, 'PF': 8, 'PLUS_MINUS': -12.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612742, 'TEAM_ABBREVIATION': 'DAL', 'TEAM_NAME': 'Dallas Mavericks', 'GAME_ID': '0022401194', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'DAL vs. MEM', 'WL': 'L', 'MIN': 240, 'PTS': 97, 'FGM': 38, 'FGA': 87, 'FG_PCT': 0.437, 'FG3M': 5, 'FG3A': 28, 'FG3_PCT': 0.179, 'FTM': 16, 'FTA': 22, 'FT_PCT': 0.727, 'OREB': 10, 'DREB': 28, 'REB': 38, 'AST': 20, 'STL': 6, 'BLK': 3, 'TOV': 18, 'PF': 13, 'PLUS_MINUS': -35.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612739, 'TEAM_ABBREVIATION': 'CLE', 'TEAM_NAME': 'Cleveland Cavaliers', 'GAME_ID': '0022401189', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'CLE vs. IND', 'WL': 'L', 'MIN': 292, 'PTS': 118, 'FGM': 44, 'FGA': 115, 'FG_PCT': 0.383, 'FG3M': 18, 'FG3A': 60, 'FG3_PCT': 0.3, 'FTM': 12, 'FTA': 22, 'FT_PCT': 0.545, 'OREB': 18, 'DREB': 47, 'REB': 65, 'AST': 21, 'STL': 6, 'BLK': 9, 'TOV': 21, 'PF': 23, 'PLUS_MINUS': -8.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612745, 'TEAM_ABBREVIATION': 'HOU', 'TEAM_NAME': 'Houston Rockets', 'GAME_ID': '0022401193', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'HOU vs. DEN', 'WL': 'L', 'MIN': 239, 'PTS': 111, 'FGM': 45, 'FGA': 100, 'FG_PCT': 0.45, 'FG3M': 12, 'FG3A': 34, 'FG3_PCT': 0.353, 'FTM': 9, 'FTA': 14, 'FT_PCT': 0.643, 'OREB': 16, 'DREB': 29, 'REB': 45, 'AST': 32, 'STL': 5, 'BLK': 4, 'TOV': 10, 'PF': 24, 'PLUS_MINUS': -15.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612747, 'TEAM_ABBREVIATION': 'LAL', 'TEAM_NAME': 'Los Angeles Lakers', 'GAME_ID': '0022401199', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'LAL vs. POR', 'WL': 'L', 'MIN': 239, 'PTS': 81, 'FGM': 31, 'FGA': 80, 'FG_PCT': 0.388, 'FG3M': 9, 'FG3A': 28, 'FG3_PCT': 0.321, 'FTM': 10, 'FTA': 14, 'FT_PCT': 0.714, 'OREB': 13, 'DREB': 29, 'REB': 42, 'AST': 21, 'STL': 9, 'BLK': 11, 'TOV': 20, 'PF': 21, 'PLUS_MINUS': -28.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612746, 'TEAM_ABBREVIATION': 'LAC', 'TEAM_NAME': 'LA Clippers', 'GAME_ID': '0022401198', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'LAC vs. GSW', 'WL': 'W', 'MIN': 265, 'PTS': 124, 'FGM': 48, 'FGA': 86, 'FG_PCT': 0.558, 'FG3M': 14, 'FG3A': 30, 'FG3_PCT': 0.467, 'FTM': 14, 'FTA': 18, 'FT_PCT': 0.778, 'OREB': 9, 'DREB': 33, 'REB': 42, 'AST': 28, 'STL': 11, 'BLK': 3, 'TOV': 16, 'PF': 21, 'PLUS_MINUS': 5.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612744, 'TEAM_ABBREVIATION': 'GSW', 'TEAM_NAME': 'Golden State Warriors', 'GAME_ID': '0022401198', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'GSW vs. LAC', 'WL': 'L', 'MIN': 265, 'PTS': 119, 'FGM': 43, 'FGA': 79, 'FG_PCT': 0.544, 'FG3M': 15, 'FG3A': 33, 'FG3_PCT': 0.455, 'FTM': 18, 'FTA': 23, 'FT_PCT': 0.783, 'OREB': 3, 'DREB': 22, 'REB': 25, 'AST': 31, 'STL': 11, 'BLK': 6, 'TOV': 15, 'PF': 20, 'PLUS_MINUS': -5.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612763, 'TEAM_ABBREVIATION': 'MEM', 'TEAM_NAME': 'Memphis Grizzlies', 'GAME_ID': '0022401194', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'MEM vs. DAL', 'WL': 'W', 'MIN': 239, 'PTS': 132, 'FGM': 52, 'FGA': 104, 'FG_PCT': 0.5, 'FG3M': 15, 'FG3A': 40, 'FG3_PCT': 0.375, 'FTM': 13, 'FTA': 15, 'FT_PCT': 0.867, 'OREB': 19, 'DREB': 34, 'REB': 53, 'AST': 31, 'STL': 13, 'BLK': 7, 'TOV': 11, 'PF': 15, 'PLUS_MINUS': 35.0}, 
+              {'SEASON_ID': '22024', 'TEAM_ID': 1610612766, 'TEAM_ABBREVIATION': 'CHA', 'TEAM_NAME': 'Charlotte Hornets', 'GAME_ID': '0022401187', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'CHA vs. BOS', 'WL': 'L', 'MIN': 240, 'PTS': 86, 'FGM': 32, 'FGA': 85, 'FG_PCT': 0.376, 'FG3M': 11, 'FG3A': 39, 'FG3_PCT': 0.282, 'FTM': 11, 'FTA': 18, 'FT_PCT': 0.611, 'OREB': 18, 'DREB': 33, 'REB': 51, 'AST': 23, 'STL': 10, 'BLK': 4, 'TOV': 17, 'PF': 16, 'PLUS_MINUS': -7.0}]
 
+# 상수 선언은 함수 최상단으로
+NEWS_API_KEY = 'd5ef6f58589b459ead2200a67f4cd344'
+MAX_PAGE = 101
+PAGE_SIZE = 80
+BALL_API = "https://www.balldontlie.io/api/v1"
 
-@app.route("/player_list", methods=['GET', 'POST'])
-def player_list():
-    MAX_PAGE = 99  # 상수 선언은 함수 최상단으로
+"""
+아래는 KAKAO API 에 대한 함수들입니다.
+"""
 
-    # 기본 페이지 번호, GET/POST 상관없이 사용하기 위해 여기서 처리
-    page = request.args.get('page', '1')
-    try:
-        current_page = int(page)
-    except ValueError:
-        current_page = 1
-
-    if request.method == 'POST':
-        user_input = request.form.get('keyword', '').strip()
-        if user_input:
-            info = players.get_players_by_name(user_input)
-            # 검색 결과가 1명이라면 info는 dict, 여러명이라면 리스트 가정
-            if isinstance(info, dict):
-                return render_template("player_list.html", info=info, current_page=1, max_page=1)
-            elif isinstance(info, list):
-                # 여러명 검색 결과가 있다면 페이지네이션 없이 한 페이지에 다 보여주는 예시
-                return render_template("player_list.html", player_lst=info, current_page=1, max_page=1)
-            else:
-                # 검색 결과 없을 때
-                return render_template("player_list.html", player_lst=[], current_page=1, max_page=1)
-        else:
-            # 빈 검색어 처리 (전체 선수 목록 보여주기 등)
-            pass  # 아래 GET 처리와 동일하게 처리하겠습니다
-
-    # GET 요청 처리 및 POST에서 빈 검색어 넘어왔을 때도 여기서 처리
-    player_lst = players.get_all_players(current_page)
-    # players.get_all_players()가 페이지 단위로 선수 리스트 반환한다고 가정
-
-    return render_template("player_list.html",
-                           player_lst=player_lst,
-                           current_page=current_page,
-                           max_page=MAX_PAGE)
-
-
-
-#팀 검색
-@app.route("/team", methods=["POST"])
+#카카오챗봇 팀 검색 API                   
+@app.route("/team", methods=["POST"])  
 def search_team():
     json_data = request.get_json(force=True)
-    print(json_data)
     user_request = json_data['userRequest']
     utterance = user_request['utterance']
-    print(utterance)
     lst = utterance.split()
     name = lst[-1]
-    print(name)
     teamname = team_name.get_team_info(name)
     info = teamname[0]
-    print(info)
     imageUrl = teamname[1]
+
     response = {
         "version": "2.0",
         "template": {
@@ -111,17 +91,15 @@ def search_team():
 def search_player():
     try:
         json_data = request.get_json(force=True)
-        print(json_data)
         user_request = json_data['userRequest']
         utterance = user_request['utterance']
-        print(utterance)
         lst = utterance.split()
         name = lst[-1]
-        print(name)
         full_name = search.get_full_name(name)
         a = search.name_to_info(full_name)
         info = a[1]
         imageUrl = a[2]
+
         response = {
         "version": "2.0",
         "template": {
@@ -155,11 +133,11 @@ def search_player():
         json_data = {}
     return jsonify({})
 
+
 # 선수 랭킹
 @app.route('/rank', methods=["POST","GET"])
 def real_rank():
     ranking = player_rank.get_season_player_rankings("2024-25", top_n=10, stat="PTS")
-    print(ranking)
 
     items = []
     for player in ranking:
@@ -233,47 +211,6 @@ def search_rank():
 
     return jsonify(response)
 
-NEWS_API_KEY = 'd5ef6f58589b459ead2200a67f4cd344'
-# NBA 뉴스(사이트ver)
-@app.route('/get_nba_news')
-def get_nba_news():
-    try:
-        resp = requests.get('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news')
-        resp.raise_for_status()
-        data = resp.json()
-
-        # 뉴스 항목 추출 (예: headlines)
-        articles = data.get('articles', []) or data.get('headlines', [])
-        result = []
-        for item in articles:
-            result.append({
-                "title": item.get("headline") or item.get("title"),
-                "summary": item.get("description") or "",
-                "url": item.get("links", {}).get("web", {}).get("href") or item.get("links", {}).get("mobile", {}).get("href")
-            })
-        return jsonify(result)
-
-    except Exception as e:
-        print("ESPN 뉴스 API 오류:", e)
-        return jsonify([]), 500
-
-def get_basketball_news():
-    try:
-        rss_url = "https://news.google.com/rss/search?q=NBA&hl=ko&gl=KR&ceid=KR:ko"
-        feed = feedparser.parse(rss_url)
-
-        if not feed.entries:
-            return None
-
-        top_news = feed.entries[0]  # 가장 최신 뉴스
-        return {
-            "title": top_news.title,
-            "link": top_news.link,
-            "image": top_news.media_thumbnail[0]['url'] if 'media_thumbnail' in top_news else None
-        }
-    except Exception as e:
-        print(f"Error fetching NBA news: {e}")
-        return None
 # NBA 뉴스(카카오ver)
 @app.route("/news", methods=["POST"])
 def news():
@@ -359,229 +296,194 @@ def news():
                 ]
             }
         })
-    
 
-community_posts = []
+"""
+웹페이지 라우트함수
+"""
 
-@app.route('/community')
-def community():
-    return render_template('community.html', posts=community_posts)
+@app.route("/")
+def home():
+    if "kakao_token" in session: #세션안에 카카오토큰이 있으면...
+        return render_template("name.html", token=True)
+    else:
+        return render_template("name.html")
 
-@app.route('/community/write', methods=['GET', 'POST'])
-def write_post():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        post = {
-            "title": title,
-            "content": content
+
+@app.route("/player_list", methods=['GET', 'POST'])
+def player_list():
+
+    # 기본 페이지 번호, GET/POST 상관없이 사용하기 위해 여기서 처리
+    page = request.args.get('page', '1')
+    try:
+        current_page = int(page)
+    except ValueError:
+        current_page = 1
+
+    if request.method == 'POST': #검색했을 때
+        user_input = request.form.get('keyword', '').strip()
+        if user_input:
+            info = players.get_players_by_name(user_input)
+            # 검색 결과가 1명이라면 info는 dict, 여러명이라면 리스트 가정
+            if isinstance(info, dict):
+                return render_template("player_list.html", info=info, current_page=1, max_page=1)
+            elif isinstance(info, list):
+                # 여러명 검색 결과가 있다면 페이지네이션 없이 한 페이지에 다 보여주는 예시
+                return render_template("player_list.html", player_lst=info, current_page=1, max_page=1)
+            else:#검색 결과가 없을 때
+                return render_template("player_list.html", player_lst=[], current_page=1, max_page=1)
+        else:
+            # 빈 검색어 처리 (전체 선수 목록 보여주기 등)
+            pass  # 아래 GET 처리와 동일하게 처리하겠습니다
+
+    # GET 요청 처리 및 POST에서 빈 검색어 넘어왔을 때도 여기서 처리
+    player_lst = players.get_all_players(current_page)
+    # players.get_all_players()가 페이지 단위로 선수 리스트 반환한다고 가정
+
+    return render_template("player_list.html",
+                           player_lst=player_lst,
+                           current_page=current_page,
+                           max_page=MAX_PAGE)
+
+
+@app.route("/special", methods=['GET'])
+def special():
+    return render_template('special.html')
+
+
+
+def get_recent_game_from_data():
+    """주어진 경기 기록에서 무작위 경기 선택"""
+    if not games_data:
+        return None
+    return random.choice(games_data)
+
+@app.route("/ran", methods=["GET", "POST"])
+def ran():
+    if request.method == "POST":
+        # 사용자 답안 확인
+        answer = request.form.get("answer", "").strip().upper()
+        team_abb = request.form.get("TEAM_ABBREVIATION", "").strip().upper()
+
+        is_correct = (answer == team_abb)
+
+        message = (
+            f"✅ 정답입니다! ({team_abb})"
+            if is_correct
+            else f"❌ 오답! 정답은 {team_abb} 입니다."
+        )
+        return render_template("result.html", message=message)
+
+    # GET 요청 → 퀴즈 생성
+    game = get_recent_game_from_data()
+    if not game:  # dict 비었을 때
+        return "<h3>⚠️ 경기 기록이 없습니다.</h3>"
+
+    # dict에서 정보 추출
+    winning_team = game.get('TEAM_ABBREVIATION', '알 수 없음')
+    matchup = game.get('MATCHUP', '정보 없음')
+    question = f"{matchup} 경기에서 승리한 팀은 어디일까요?"
+
+    return render_template(
+        'ran.html',
+        question=question,
+        team_name=winning_team   # 정답
+    )
+
+
+@app.route('/get_nba_news')
+def get_nba_news():
+    try:
+        resp = requests.get('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news')
+        resp.raise_for_status()
+        data = resp.json()
+
+        # 뉴스 항목 추출 (예: headlines)
+        articles = data.get('articles', []) or data.get('headlines', [])
+        result = []
+        for item in articles:
+            result.append({
+                "title": item.get("headline") or item.get("title"),
+                "summary": item.get("description") or "",
+                "url": item.get("links", {}).get("web", {}).get("href") or item.get("links", {}).get("mobile", {}).get("href")
+            })
+        return jsonify(result)
+
+    except Exception as e:
+        print("ESPN 뉴스 API 오류:", e)
+        return jsonify([]), 500
+
+def get_basketball_news():
+    try:
+        rss_url = "https://news.google.com/rss/search?q=NBA&hl=ko&gl=KR&ceid=KR:ko"
+        feed = feedparser.parse(rss_url)
+
+        if not feed.entries:
+            return None
+
+        top_news = feed.entries[0]  # 가장 최신 뉴스
+        return {
+            "title": top_news.title,
+            "link": top_news.link,
+            "image": top_news.media_thumbnail[0]['url'] if 'media_thumbnail' in top_news else None
         }
-        community_posts.append(post)
-        return redirect(url_for('community'))
-    return render_template('write_post.html')
+    except Exception as e:
+        print(f"Error fetching NBA news: {e}")
+        return None
+
+# NBA 경기 데이터 가져오는 함수
+def get_nba_game_data():
+    game_finder = leaguegamefinder.LeagueGameFinder()
+    games_df = game_finder.get_data_frames()[0]  # 첫 번째 DataFrame을 사용
+    return games_df  # DataFrame 반환
+
+# 데이터에 페이지네이션을 적용하는 함수
+def paginate_data(df, page, page_size):
+    start_row = (page - 1) * page_size
+    end_row = start_row + page_size
+    paginated_df = df.iloc[start_row:end_row]
+    return paginated_df
+
+#경기 기록
+@app.route('/game')
+def game():
+    page = request.args.get('page', default=1, type=int)  # 현재 페이지 (디폴트는 1)
+    games_df = get_nba_game_data()  # NBA 경기 데이터 가져오기
+
+    # 페이지네이션 적용
+    paginated_games = paginate_data(games_df, page, PAGE_SIZE)
+    
+    # 데이터 프레임을 리스트로 변환
+    games_data = paginated_games.to_dict(orient='records')
+    
+    # 전체 페이지 수 계산
+    total_pages = (len(games_df) // PAGE_SIZE) + (1 if len(games_df) % PAGE_SIZE > 0 else 0)
+
+    return render_template('game.html', games=games_data, page=page, total_pages=total_pages)
 
 
-
-
-
-
-@app.route('/play', methods = ['GET'])
-def what():
-    return render_template("player.html")
-
-@app.route('/find_info', methods = ['GET', 'POST'])
-def find_info():
-    if request.method == 'GET':
-        return render_template('player.html')
-    elif request.method == 'POST':
-        name = request.form['name'] #받은 form데이터에서 name이 name인 녀석을 가져온다.
-        print(name)
-        headers, rowSet, imageUrl = search.name_to_info(name=name)
-        return render_template('player.html', headers = headers, rowSet = rowSet, imageUrl = imageUrl) #응답
-
+#카카오 로그인 페이지 보여주는 Route 함수 
 @app.route('/login', methods = ['GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
 
-
-@app.route('/abc', methods=['GET', 'POST'])
-def welcome():
-
-    try:
-        json_data = request.get_json(force=True)
-        print(json_data)
-    except Exception as e:
-        json_data = {}
-
-    # 'utterance'만 뽑아서 출력
-    utterance = None
-    if json_data:
-        
-        utterance = json_data.get('userRequest', {}).get('utterance')
-
-    playername, teams = utterance[5:]
-    print(playername, teams)
-    fullname = search.get_full_name(playername, teams)
-    print(fullname)
-    temp, info, image_url, player_id = search.name_to_info(fullname)
-    print(info)
-        
-    response = {
-        "version": "2.0",
-        "template": {
-            "outputs": [
-                {
-                    "basicCard": {
-                        "title": info[0] + " " + info[1],  # 성 + 이름
-                        "description": (
-                            f"생년월일: {info[2]}\n"
-                            f"키: {info[3]} / 몸무게: {info[4]}\n"
-                            f"등번호: {info[5]} | 포지션: {info[6]}\n"
-                            f"팀: {info[7]}"
-                        ),
-                        "thumbnail": {
-                            "imageUrl": image_url
-                        },
-                        "buttons": [
-                            {
-                                "label": "NBA 프로필 보기",
-                                "action": "webLink",
-                                "webLinkUrl": f"https://www.nba.com/player/{player_id}"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-    }
-
-
-    return jsonify(response)
-
-
-def get_season_scoring_leaders(season: str, top_n: int = 10):
-    """
-    주어진 시즌의 득점 상위 선수들을 반환하는 함수입니다.
-    """
-    try:
-        stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season)
-        df = stats.get_data_frames()[0]
-
-        top_scorers = df.sort_values(by='PTS', ascending=False).head(top_n)
-        result = top_scorers[["PLAYER_ID", "PLAYER_NAME", "TEAM_ABBREVIATION", "PTS", "PLAYER_POSITION"]]
-        result = result.reset_index(drop=True)
-        return result
-
-    except Exception as e:
-        return pd.DataFrame() 
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.clear()
+    return redirect('/')
     
-@app.route("/callback")
+#카카오 로그인 콜백 함수
+@app.route("/callback", methods=['GET'])
 def callback():
     code = request.args.get('code') #주소창에 있는 code의 값을 뽑아내기
-    url = "https://kauth.kakao.com/oauth/token"
-
-    headers={
-        "Content-Type":"application/x-www-form-urlencoded;charset=utf-8"
-    }
-    body={
-        "grant_type":"authorization_code",
-        "client_id":"4727b876fbf37e21bd488df5bc9f62d9",
-        "redirect_uri":"http://127.0.0.1:5000/callback",
-        "code": code,
-        "client_secret":"aQAUnGe0e6P0uPrT06otJN4YwBcZCts5"
-
-    }
-    try:
-        response = requests.post(url=url,data=body,headers=headers)
-        response = response.json()
-        access_token = response['access_token']
-        print(access_token)
-    except Exception as e:
-        print("some issues..")
-        print(e)
-    try:
-        bearer_token = "Bearer "+ access_token
-        url = "https://kapi.kakao.com/v2/user/me"
-        headers = {
-            "Authorization": bearer_token,
-            "Content-Type":"application/x-www-form-urlencoded;charset=utf-8"
-        }
-        response = requests.get(url=url, headers=headers)
-        print(response.status_code)
-        print(response.text)
-    except Exception as e:
-        print("some issues..")
-        print(e)
-    response = response.json()
-    nickname = response['kakao_account']['profile']['nickname']
-    print(nickname)
-
-    url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
-    bearer_token = "Bearer "+ access_token
-    headers = {
-        "Authorization": bearer_token,
-        "Content-Type":"application/x-www-form-urlencoded;charset=utf-8"
-    }
-    #사용자가 관심 팀을 저장하면 팀의 소식을 보내주는..~
-
-    template_object={
-    "object_type": "feed",
-    "content": {
-        "title": "NBA 프로농구 봇",
-        "description": "NBA 마지막 결승전 시작!",
-        "image_url": "https://dimg.donga.com/wps/NEWS/IMAGE/2021/09/22/109353831.1.jpg",
-        "image_width": 640,
-        "image_height": 640,
-        "link": {
-        "web_url": "http://www.daum.net",
-        "mobile_web_url": "http://m.daum.net",
-        "android_execution_params": "contentId=100",
-        "ios_execution_params": "contentId=100"
-        }
-    },
-    "item_content": {
-        "profile_text": "NBA",
-        "profile_image_url": "https://w7.pngwing.com/pngs/384/886/png-transparent-nba-logo.png",
-        "title_image_url": "https://w-s-c.co.kr/web/product/big/202310/a5b3015c0a902e4f4d179d3d5a821b7e.jpg",
-        "title_image_text": "르브론 제임스",
-        "title_image_category": "농구선수",
-    },
-    "social": {
-        "like_count": 9999,
-        "comment_count": 1483,
-        "shared_count": 1879,
-        "view_count": 12140,
-        "subscriber_count": 1214005
-    },
-    "buttons": [
-        {
-        "title": "웹으로 이동",
-        "link": {
-            "web_url": "http://www.daum.net",
-            "mobile_web_url": "http://m.daum.net"
-        }
-        },
-        {
-        "title": "앱으로 이동",
-        "link": {
-            "android_execution_params": "contentId=100",
-            "ios_execution_params": "contentId=100"
-        }
-        }
-    ]
-    }
-
-    template_string = json.dumps(template_object, ensure_ascii=False)
-    template_string = "template_object="+template_string
-    response = requests.post(url=url, headers=headers, data=template_string)
-    print(response.status_code)
-    print(response.text)
-    
-    return render_template("name.html")
+    token = kakao_login(code) #KAKAO 에서 발급해준 ACCESS_TOKEN을 token변수에 저장. -> 로그인 완료
+    if token: #로그인이 완료 되었다면...
+        session['kakao_token'] = token #세션(카카오토큰)에 token을 저장
+    return redirect("/")#메인 페이지로
 
 latest_news = {}
 
+#뉴스 갱신 하루마다 실행
 def update_news():
     """하루마다 실행할 뉴스 업데이트 함수"""
     global latest_news
@@ -604,7 +506,7 @@ def update_news():
 def periodic_task():
     while True:
         update_news()
-        time.sleep(86400)  # 86400초 = 24시간
+        time.sleep(3600)  # 3600초 = 1시간 , 86400초 = 24시간
 
 def start_periodic_task():
     thread = threading.Thread(target=periodic_task)
@@ -619,7 +521,126 @@ def news_latest():
     else:
         return jsonify({"message": "뉴스가 아직 업데이트되지 않았습니다."})
 
+
+"""
+커뮤니티 기능
+Create, Read, Update, Delete 구현
+"""
+
+# 게시판 기능
+community_posts = load_posts()
+
+@app.route('/community')
+def community():
+    try:
+        return render_template('community.html', posts=community_posts)
+    except Exception as e:
+        print(f"[ERROR] 커뮤니티 페이지 렌더링 실패: {e}")
+        return "오류가 발생했습니다. 잠시 후 다시 시도해주세요.", 500
+
+
+@app.route('/community/write', methods=['GET', 'POST'])
+def write_post():
+    author = "익명"
+    try:
+        if "kakao_token" in session:
+            kakao_token = session["kakao_token"]
+            user_info = get_user_info_from_kakao(kakao_token)
+            print(user_info)
+            if user_info:
+                kakao_account = user_info.get('kakao_account', {})
+                profile = kakao_account.get('profile', {})
+                email = kakao_account.get('email', '이메일 없음')
+                nickname = profile.get('nickname', '익명')
+                author = nickname
+                print(f"User info: email={email}, nickname={nickname}")
+
+        if request.method == 'POST':
+            title = request.form['title']
+            content = request.form['content']
+            post = {
+                "title": title,
+                "content": content,
+                "author": author,
+                "comments": []
+            }
+            community_posts.append(post)
+            save_posts(community_posts)
+            return redirect(url_for('community'))
+
+        return render_template('write_post.html', author=author)
+
+    except Exception as e:
+        print(f"[ERROR] 게시글 작성 중 오류: {e}")
+        return "게시글 작성 중 오류가 발생했습니다.", 500
+
+
+@app.route('/community/<int:post_id>/edit', methods=['GET', 'POST'])
+def edit_post(post_id):
+    try:
+        if not (0 <= post_id < len(community_posts)):
+            abort(404)
+        post = community_posts[post_id]
+
+        if request.method == 'POST':
+            new_title = request.form['title']
+            new_content = request.form['content']
+            post['title'] = new_title
+            post['content'] = new_content
+            save_posts(community_posts)
+            return redirect(url_for('community'))
+
+        return render_template('edit_post.html', post=post, post_id=post_id)
+
+    except Exception as e:
+        print(f"[ERROR] 게시글 수정 중 오류: {e}")
+        return "게시글 수정 중 문제가 발생했습니다.", 500
+
+
+@app.route('/community/<int:post_id>/delete', methods=['POST'])
+def delete_post(post_id):
+    try:
+        if not (0 <= post_id < len(community_posts)):
+            abort(404)
+        community_posts.pop(post_id)
+        save_posts(community_posts)
+        return redirect(url_for('community'))
+    except Exception as e:
+        print(f"[ERROR] 게시글 삭제 중 오류: {e}")
+        return "게시글 삭제 중 문제가 발생했습니다.", 500
+
+
+@app.route('/community/<int:post_id>/comment', methods=['POST'])
+def add_comment(post_id):
+    try:
+        if not (0 <= post_id < len(community_posts)):
+            abort(404)
+        comment = request.form['comment']
+        community_posts[post_id]["comments"].append(comment)
+        save_posts(community_posts)
+        return redirect(url_for('community'))
+    except Exception as e:
+        print(f"[ERROR] 댓글 추가 중 오류: {e}")
+        return "댓글 추가 중 오류가 발생했습니다.", 500
+
+
+@app.route('/community/<int:post_id>/comment/<int:comment_id>/delete', methods=['POST'])
+def delete_comment(post_id, comment_id):
+    try:
+        if not (0 <= post_id < len(community_posts)):
+            abort(404)
+        comments = community_posts[post_id]["comments"]
+        if not (0 <= comment_id < len(comments)):
+            abort(404)
+        comments.pop(comment_id)
+        save_posts(community_posts)
+        return redirect(url_for('community'))
+    except Exception as e:
+        print(f"[ERROR] 댓글 삭제 중 오류: {e}")
+        return "댓글 삭제 중 오류가 발생했습니다.", 500
+
+
 if __name__ == "__main__":
     start_periodic_task()
 
-    app.run(host='0.0.0.0', port=443, ssl_context=('cert.pem', 'key.pem'), debug=False)
+    app.run(host='0.0.0.0', port=5000, ssl_context=('cert.pem', 'key.pem'), debug=True)

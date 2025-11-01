@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>NBA 팬 퀴즈</title>
+    <style>
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            background: #0b132b;
+            color: white;
+            text-align: center;
+            margin-top: 60px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .quiz-box {
+            background: #1c2541;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏀 NBA 팬 퀴즈</h1>
+    <div class="quiz-box">
+        <h3>{{ question }}</h3>
+        <form method="POST">
+            <input type="hidden" name="TEAM_ABBREVIATION" value="{{ team_name }}">
+            <input type="text" name="answer" placeholder="선수 이름을 입력하세요" required>
+            <br>
+            <button type="submit">정답 확인</button>
+        </form>
+    </div>
+</body>
+</html>
+

@@ -40,8 +40,15 @@
   </style>
 </head>
 <body>
-
+     
   <h1>✏️ 글 작성하기</h1>
+
+  {% if author %}
+      <p>작성자: {{ author }}</p>
+  {% else %}
+      <p>작성자: 익명</p>
+  {% endif %}
+  
   <form method="post">
     <label for="title">제목:</label>
     <input type="text" id="title" name="title" required>

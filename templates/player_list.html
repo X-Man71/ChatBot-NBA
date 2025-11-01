@@ -1,95 +1,147 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>NBA 선수 명단</title>
-        <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 40px;
-            background-color: #b98930;
-            color: #fff;
-            background-image: url('https://previews.123rf.com/images/grgroup/grgroup1404/grgroup140400795/27195081-basketball-court-over-wooden-background-vector-illustration.jpg'); /* 농구코트 느낌 배경 */
-            background-size: cover;
-            background-attachment: fixed;
-        }
+<meta charset="UTF-8">
+<title>NBA 선수 명단</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 40px;
+    background-color: #0d0d0d;
+    color: #fff;
+    background-image: linear-gradient(to bottom right, #111, #222);
+    background-attachment: fixed;
+}
 
-        h1 {
-            text-align: center;
-            color: #ffa500; /* 농구공 색 */
-            text-shadow: 2px 2px 5px black;
-            margin-bottom: 40px;
-        }
+h1 {
+    text-align: center;
+    color: #ff7b00;
+    text-shadow: 3px 3px 8px #000;
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background-color: rgb(0, 0, 0);
-            border: 2px solid #ffa500;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
-        }
+/* 검색창 */
+form {
+    text-align: center;
+    margin-bottom: 40px;
+}
+input[type="text"] {
+    width: 300px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 1px solid #ffa500;
+    outline: none;
+    transition: 0.3s;
+    font-size: 1em;
+}
+input[type="text"]:focus {
+    box-shadow: 0 0 10px #ffa500;
+}
+button[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    background: linear-gradient(90deg, #ff7b00, #ff4500);
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+button[type="submit"]:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #ff7b00;
+}
 
-        th, td {
-            text-align: center;
-            padding: 14px 16px;
-            border-bottom: 1px solid #ffa500;
-        }
+/* 테이블 */
+.table {
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: rgba(0,0,0,0.85);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+.table-row {
+    display: table-row;
+    transition: 0.25s;
+}
+.table-row:hover {
+    background-color: rgba(255,165,0,0.15);
+    transform: scale(1.01);
+}
+.table-cell {
+    display: table-cell;
+    padding: 16px 18px;
+    border-bottom: 1px solid #ffa500;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.05em;
+    color: #f1f1f1;
+}
+.table-header {
+    background: linear-gradient(90deg, #d35400, #ff7b00);
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px #000;
+}
+.table a {
+    text-decoration: none;
+    color: inherit;
+}
 
-        th {
-            background-color: #d35400;
-            color: white;
-            font-size: 1.1em;
-        }
+/* 상태 */
+.active {
+    color: #00e676;
+    font-weight: bold;
+}
+.retired {
+    color: #aaa;
+    font-style: italic;
+}
 
-        tr:hover {
-            background-color: rgba(255, 165, 0, 0.2);
-        }
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+.pagination button {
+    padding: 8px 14px;
+    border: 1px solid #ffa500;
+    background-color: #111;
+    color: #ffa500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+.pagination button:hover {
+    background-color: #ffa500;
+    color: black;
+}
+.pagination .active {
+    background-color: #ff7b00;
+    color: white;
+    border-color: #ff7b00;
+}
 
-        .active {
-            color: #00e600;
-            font-weight: bold;
-        }
-
-        .retired {
-            color: #bbbbbb;
-            font-style: italic;
-        }
-
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.9em;
-            color: #ffa500;
-            text-shadow: 1px 1px 2px black;
-            }
-    .pagination {
-        display: flex;
-        gap: 5px;
-        margin-top: 20px;
-        flex-wrap: wrap;
-    }
-    .pagination button {
-        padding: 8px 14px;
-        border: 1px solid #ccc;
-        background-color: white;
-        color: #333;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: 0.2s ease;
-    }
-    .pagination button:hover {
-        background-color: #f0f0f0;
-    }
-    .pagination .active {
-        background-color: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-
-    </style>
+/* 푸터 */
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #ffa500;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+</style>
 <body>
     <h1>🏀NBA 선수 명단🏀</h1>
-
+    <a href="/">메인 페이지로 돌아가기</a>
     <form method="post" style="text-align: center; margin-bottom: 30px;">
     <input type="text" name= "keyword" placeholder="선수 이름을 검색하세요" >
     <button type="submit" style="padding: 10px 20px; border: none; background-color: #d35400; color: white; border-radius: 5px; cursor: pointer;">
@@ -98,7 +150,7 @@
 </form>
 
     
-    <table>
+    <div class=table>
         <thead>
             <tr>
                 <th>이름</th>
@@ -107,26 +159,23 @@
             </tr>
         </thead>
         {%if player_lst %}
-        <tbody>
             {% for player in player_lst %}
-            <tr>
-                <td>{{ player['full_name'] }}</td>
-                <td>{{ player['id'] }}</td>
-                <td>{{ '활동 중' if player['is_active'] else '은퇴' }}</td>
-            </tr>
+                <a class="table-row" href="https://www.nba.com/player/{{ player['id'] }}">
+                    <div class="table-cell">{{ player['full_name'] }}</div>
+                    <div class="table-cell">{{ player['id'] }}</div>
+                    <div class="table-cell">>{{ '활동 중' if player['is_active'] else '은퇴' }}</div>
+                </a>
             {% endfor %}
-        </tbody>
         {%endif%}
         {%if info %}
-        <tbody>
-            <tr>
-                <td>{{ info['full_name'] }}</td>
-                <td>{{ info['id'] }}</td>
-                <td>{{ '활동 중' if info['is_active'] else '은퇴' }}</td>
-            </tr>
-        </tbody>
+            <a class="table-row" href="https://www.nba.com/player/{{ info['id'] }}">
+                <div class="table-cell">{{ info['full_name'] }}</div>
+                <div class="table-cell">{{ info['id'] }}</div>
+                <div class="table-cell">{{ '활동 중' if info['is_active'] else '은퇴' }}</div>
+            </a>
         {%endif%}
     </table>
+    
 
 
 <div class="pagination">
