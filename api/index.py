@@ -8,7 +8,6 @@ from service.kakaologin import get_user_info_from_kakao, kakao_login
 from nba_api.stats.static import players
 import pandas as pd
 import requests, random
-
 import json
 import service.player_rank as player_rank
 import service.search as search
