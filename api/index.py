@@ -1,4 +1,3 @@
-from turtle import title
 from flask import Flask, request, render_template, redirect, jsonify, send_from_directory, url_for, abort, session
 from service.utils import load_posts, save_posts
 from nba_api.stats.endpoints import leaguedashplayerstats
