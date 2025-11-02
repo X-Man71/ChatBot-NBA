@@ -1,11 +1,14 @@
-# service/__init__.py
+import json
+import os
 
-# 전역 변수
-VERSION = "1.0"
+POSTS_FILE = 'community_posts.json'
 
-# 전역 함수
-def hello_service():
-    return "Hello from service package!"
+def load_posts():
+    if os.path.exists(POSTS_FILE):
+        with open(POSTS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
 
-# 패키지 로딩 시 초기화 코드
-print("service 패키지가 로드되었습니다.")
+def save_posts(posts):
+    with open(POSTS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(posts, f, ensure_ascii=False, indent=4)
