@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from flask import Flask, request, render_template, redirect, jsonify, url_for, abort, session
-from service import load_posts, save_posts
+from utils import load_posts, save_posts
 from nba_api.stats.endpoints import leaguedashplayerstats
 from nba_api.stats.endpoints import leaguegamefinder
 from service.kakaologin import get_user_info_from_kakao, kakao_login
