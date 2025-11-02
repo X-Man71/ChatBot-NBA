@@ -37,6 +37,7 @@ games_data = [{'SEASON_ID': '22024', 'TEAM_ID': 1610612741, 'TEAM_ABBREVIATION':
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612763, 'TEAM_ABBREVIATION': 'MEM', 'TEAM_NAME': 'Memphis Grizzlies', 'GAME_ID': '0022401194', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'MEM vs. DAL', 'WL': 'W', 'MIN': 239, 'PTS': 132, 'FGM': 52, 'FGA': 104, 'FG_PCT': 0.5, 'FG3M': 15, 'FG3A': 40, 'FG3_PCT': 0.375, 'FTM': 13, 'FTA': 15, 'FT_PCT': 0.867, 'OREB': 19, 'DREB': 34, 'REB': 53, 'AST': 31, 'STL': 13, 'BLK': 7, 'TOV': 11, 'PF': 15, 'PLUS_MINUS': 35.0}, 
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612766, 'TEAM_ABBREVIATION': 'CHA', 'TEAM_NAME': 'Charlotte Hornets', 'GAME_ID': '0022401187', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'CHA vs. BOS', 'WL': 'L', 'MIN': 240, 'PTS': 86, 'FGM': 32, 'FGA': 85, 'FG_PCT': 0.376, 'FG3M': 11, 'FG3A': 39, 'FG3_PCT': 0.282, 'FTM': 11, 'FTA': 18, 'FT_PCT': 0.611, 'OREB': 18, 'DREB': 33, 'REB': 51, 'AST': 23, 'STL': 10, 'BLK': 4, 'TOV': 17, 'PF': 16, 'PLUS_MINUS': -7.0}]
 
+
 # 상수 선언은 함수 최상단으로
 NEWS_API_KEY = 'd5ef6f58589b459ead2200a67f4cd344'
 MAX_PAGE = 101
