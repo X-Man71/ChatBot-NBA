@@ -1,7 +1,15 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import sys
+import os
+
+# index.py 기준으로 프로젝트 루트 경로를 Python 모듈 경로에 추가
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+print("Python path:", sys.path)  # 디버그용
+
 from flask import Flask, request, render_template, redirect, jsonify, url_for, abort, session
-from utils import load_posts, save_posts
+from service.utils import load_posts, save_posts
 from nba_api.stats.endpoints import leaguedashplayerstats
 from nba_api.stats.endpoints import leaguegamefinder
 from service.kakaologin import get_user_info_from_kakao, kakao_login
