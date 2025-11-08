@@ -160,7 +160,6 @@ def search_player():
 @app.route('/rank', methods=["POST","GET"])
 def real_rank():
     global cache_data, cache_time
-
     if cache_data and time.time() - cache_time < CACHE_TTL:
         return jsonify(cache_data)
     ranking = player_rank.get_season_player_rankings("2024-25", top_n=10, stat="PTS")
@@ -550,7 +549,6 @@ def start_periodic_task():
     thread.daemon = True
     thread.start()
 
-@app.route("/news_latest")
 def news_latest():
     """저장된 최신 뉴스 반환"""
     if latest_news:
