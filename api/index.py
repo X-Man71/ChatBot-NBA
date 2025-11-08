@@ -29,6 +29,9 @@ import threading
 app = Flask(__name__, static_folder='static')
 app.secret_key = "whatthehell" #SESSION을 사용하려면 KEY를 작성해줘야한다.
 
+cache_data = None
+cache_time = 0
+CACHE_TTL = 3600
 
 """
 게임 데이터
@@ -156,6 +159,10 @@ def search_player():
 # 선수 랭킹
 @app.route('/rank', methods=["POST","GET"])
 def real_rank():
+    global cache_data, cache_time
+
+    if cache_data and time.time() - cache_time < CACHE_TTL:
+        return jsonify(cache_data)
     ranking = player_rank.get_season_player_rankings("2024-25", top_n=10, stat="PTS")
 
     items = []
@@ -189,11 +196,18 @@ def real_rank():
             ]
         }
     }
+
+    cache_data = response
+    cache_time = time.time()
     return jsonify(response)
 
 # 팀 랭킹
 @app.route('/team_rank', methods=["POST","GET"])
 def search_rank():
+    global cache_data, cache_time
+
+    if cache_data and time.time() - cache_time < CACHE_TTL:
+        return jsonify(cache_data)
     t_ranking = teamrank.get_season_team_rankings(2024-25, top_n=10)
     items = [] 
     for team in t_ranking:
@@ -228,6 +242,8 @@ def search_rank():
         }
     }
 
+    cache_data = response
+    cache_time = time.time()
     return jsonify(response)
 
 # NBA 뉴스(카카오ver)
