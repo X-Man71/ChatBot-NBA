@@ -20,6 +20,7 @@ def get_season_player_rankings(season: str, top_n: int = 10, stat: str = "PTS"):
     try:
         stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season)
         df = stats.get_data_frames()[0]
+        print(df)
 
         # 주요 통계 기준 내림차순 정렬 후 상위 top_n 추출
         top_players = df.sort_values(by=stat, ascending=False).head(top_n)
