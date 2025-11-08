@@ -66,7 +66,7 @@ def get_season_team_rankings(season: str, top_n: int = 10):
             "W_PCT": "승률"
         }).reset_index(drop=True)
 
-        result_json = top_teams.to_dict(orient="records")
+        result_json = top_teams(orient="records")
         for team in result_json:
             team["image_path"] = get_team_logo(team["팀 이름"])
 

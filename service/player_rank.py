@@ -35,7 +35,7 @@ def get_season_player_rankings(season: str, top_n: int = 10, stat: str = "PTS"):
         top_players = top_players.reset_index(drop=True)
 
         # JSON 형태로 변환
-        result_json = top_players.to_dict(orient="records")
+        result_json = top_players(orient="records")
         for player in result_json:
             player_name = player["선수 이름"]
             player["image_url"] = get_player_image(player_name)
