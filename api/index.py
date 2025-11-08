@@ -165,6 +165,7 @@ def real_rank():
         return jsonify(cache_data)
     ranking = player_rank.get_season_player_rankings("2024-25", top_n=10, stat="PTS")
     print(ranking)
+    print("TEST LOG")
     items = []
     for player in ranking:
         print(player)
