@@ -27,7 +27,7 @@ def get_season_player_rankings(season: str, top_n: int = 10, stat: str = "PTS"):
             "Origin": "https://www.nba.com",
             "Accept": "application/json, text/plain, */*"
         }
-        stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season, headers=custom_headers)
+        stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season, headers=custom_headers,timeout=60)
         print(stats)
         df = stats.get_data_frames()[0]
         print(df)
