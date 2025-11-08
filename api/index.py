@@ -164,11 +164,12 @@ def real_rank():
     if cache_data and time.time() - cache_time < CACHE_TTL:
         return jsonify(cache_data)
     ranking = player_rank.get_season_player_rankings("2024-25", top_n=10, stat="PTS")
-
+    print(ranking)
     items = []
     for player in ranking:
+        print(player)
         item = {
-            "title": player["선수 이름"],
+            "title": {player["선수 이름"]},
             "description": (
                 f"팀: {player['팀']}\n"
                 f"경기수: {player['경기수']}\n"
