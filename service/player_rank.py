@@ -17,8 +17,18 @@ def get_player_image(player_name):
         return "https://cdn-icons-png.flaticon.com/512/847/847969.png"
     
 def get_season_player_rankings(season: str, top_n: int = 10, stat: str = "PTS"):
+    print("GET SEASON PLAYER RANKINGS")
     try:
-        stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season)
+        custom_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/115.0.0.0 Safari/537.36",
+            "Referer": "https://www.nba.com/",
+            "Origin": "https://www.nba.com",
+            "Accept": "application/json, text/plain, */*"
+        }
+        stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season, headers=custom_headers)
+        print(stats)
         df = stats.get_data_frames()[0]
         print(df)
 
