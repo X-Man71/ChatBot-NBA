@@ -26,7 +26,7 @@ import service.players as players
 import feedparser
 import time
 import threading
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = "whatthehell" #SESSION을 사용하려면 KEY를 작성해줘야한다.
 
 
