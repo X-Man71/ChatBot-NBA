@@ -1,7 +1,7 @@
 import json
 import os
 
-POSTS_FILE = 'community_posts.json'
+POSTS_FILE = 'community_post_database.json'
 
 def load_posts():
     if os.path.exists(POSTS_FILE):

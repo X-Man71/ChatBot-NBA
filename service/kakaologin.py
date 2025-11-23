@@ -53,7 +53,7 @@ def kakao_login(code):
         "email":email,
         "nickname":nickname
     }
-    with open("data.json",'w',encoding ="utf-8") as f:
+    with open("user_info.json",'w',encoding ="utf-8") as f:
         json.dump(data, f, ensure_ascii = False ,indent=4)
     return access_token
 def get_user_info_from_kakao(token):

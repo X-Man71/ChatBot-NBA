@@ -35,6 +35,7 @@ app.secret_key = "whatthehell" #SESSION을 사용하려면 KEY를 작성해줘�
 """
 
 
+#퀴즈용 게임데이터
 games_data = [{'SEASON_ID': '22024', 'TEAM_ID': 1610612741, 'TEAM_ABBREVIATION': 'CHI', 'TEAM_NAME': 'Chicago Bulls', 'GAME_ID': '0022401191', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'CHI @ PHI', 'WL': 'W', 'MIN': 240, 'PTS': 122, 'FGM': 47, 'FGA': 103, 'FG_PCT': 0.456, 'FG3M': 13, 'FG3A': 40, 'FG3_PCT': 0.325, 'FTM': 15, 'FTA': 20, 'FT_PCT': 0.75, 'OREB': 15, 'DREB': 44, 'REB': 59, 'AST': 29, 'STL': 10, 'BLK': 4, 'TOV': 12, 'PF': 17, 'PLUS_MINUS': 20.0}, 
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612753, 'TEAM_ABBREVIATION': 'ORL', 'TEAM_NAME': 'Orlando Magic', 'GAME_ID': '0022401186', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'ORL @ ATL', 'WL': 'L', 'MIN': 240, 'PTS': 105, 'FGM': 40, 'FGA': 88, 'FG_PCT': 0.455, 'FG3M': 15, 'FG3A': 35, 'FG3_PCT': 0.429, 'FTM': 10, 'FTA': 15, 'FT_PCT': 0.667, 'OREB': 12, 'DREB': 31, 'REB': 43, 'AST': 25, 'STL': 11, 'BLK': 5, 'TOV': 14, 'PF': 8, 'PLUS_MINUS': -12.0},
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612742, 'TEAM_ABBREVIATION': 'DAL', 'TEAM_NAME': 'Dallas Mavericks', 'GAME_ID': '0022401194', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'DAL @ MEM', 'WL': 'L', 'MIN': 240, 'PTS': 97, 'FGM': 38, 'FGA': 87, 'FG_PCT': 0.437, 'FG3M': 5, 'FG3A': 28, 'FG3_PCT': 0.179, 'FTM': 16, 'FTA': 22, 'FT_PCT': 0.727, 'OREB': 10, 'DREB': 28, 'REB': 38, 'AST': 20, 'STL': 6, 'BLK': 3, 'TOV': 18, 'PF': 13, 'PLUS_MINUS': -35.0}, 
@@ -56,7 +57,7 @@ games_data = [{'SEASON_ID': '22024', 'TEAM_ID': 1610612741, 'TEAM_ABBREVIATION':
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612749, 'TEAM_ABBREVIATION': 'MIL', 'TEAM_NAME': 'Milwaukee Bucks', 'GAME_ID': '0022401192', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'MIL vs. DET', 'WL': 'W', 'MIN': 265, 'PTS': 140, 'FGM': 50, 'FGA': 86, 'FG_PCT': 0.581, 'FG3M': 23, 'FG3A': 44, 'FG3_PCT': 0.523, 'FTM': 17, 'FTA': 22, 'FT_PCT': 0.773, 'OREB': 6, 'DREB': 32, 'REB': 38, 'AST': 30, 'STL': 5, 'BLK': 7, 'TOV': 20, 'PF': 17, 'PLUS_MINUS': 7.0}, 
               {'SEASON_ID': '22024', 'TEAM_ID': 1610612759, 'TEAM_ABBREVIATION': 'SAS', 'TEAM_NAME': 'San Antonio Spurs', 'GAME_ID': '0022401197', 'GAME_DATE': '2025-04-13', 'MATCHUP': 'SAS vs. TOR', 'WL': 'W', 'MIN': 240, 'PTS': 125, 'FGM': 43, 'FGA': 84, 'FG_PCT': 0.512, 'FG3M': 11, 'FG3A': 32, 'FG3_PCT': 0.344, 'FTM': 28, 'FTA': 32, 'FT_PCT': 0.875, 'OREB': 9, 'DREB': 41, 'REB': 50, 'AST': 22, 'STL': 11, 'BLK': 2, 'TOV': 12, 'PF': 13, 'PLUS_MINUS': 7.0}]
 
-# 상수 선언은 함수 최상단으로
+# 상수 선언은
 NEWS_API_KEY = 'd5ef6f58589b459ead2200a67f4cd344'
 MAX_PAGE = 101
 PAGE_SIZE = 80
@@ -384,16 +385,16 @@ def ran():
         is_correct = (answer == team_abb)
 
         message = (
-            f"✅ 정답입니다! ({team_abb})"
+            f"정답입니다! ({team_abb})"
             if is_correct
-            else f"❌ 오답! 정답은 {team_abb} 입니다."
+            else f"오답! 정답은 {team_abb} 입니다."
         )
         return render_template("result.html", message=message)
 
     # GET 요청 → 퀴즈 생성
     game = get_recent_game_from_data()
     if not game:  # dict 비었을 때
-        return "<h3>⚠️ 경기 기록이 없습니다.</h3>"
+        return "<h3>경기 기록이 없습니다.</h3>"
 
     # dict에서 정보 추출
     winning_team = game.get('TEAM_ABBREVIATION', '알 수 없음')
@@ -453,7 +454,7 @@ def get_nba_game_data():
     games_df = game_finder.get_data_frames()[0]  # 첫 번째 DataFrame을 사용
     return games_df  # DataFrame 반환
 
-# 데이터에 페이지네이션을 적용하는 함수
+# 데이터에 페이지 적용하기위해서 사용
 def paginate_data(df, page, page_size):
     start_row = (page - 1) * page_size
     end_row = start_row + page_size
